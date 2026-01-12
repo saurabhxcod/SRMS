@@ -5,6 +5,7 @@ import connectDb from './db/connectDB.js';
 import userRouter from './routes/user.route.js';
 import studentRouter from './routes/student.route.js';
 import cookieParser from 'cookie-parser';
+import classRouter from './routes/class.route.js';
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(cookieParser());
 //Routes
 app.use('/api/v1/users',userRouter);
 app.use('/api/v1/students',studentRouter);
+app.use('/api/v1/class',classRouter);
 
 app.listen(process.env.PORT,()=>{
     console.log(`Server is running on port ${process.env.PORT}`);
