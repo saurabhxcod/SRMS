@@ -1,5 +1,6 @@
 import Student from "../models/student.model.js";
 import User from "../models/user.model.js";
+import Class from "../models/class.model.js";
 import bcrypt from "bcryptjs";
 import { addStudentValidation , updateStudentValidation } from "../validations/studentValidation.js";
 
@@ -19,6 +20,10 @@ export const addStudent = async (req, res) => {
         message: "Student with this roll number already exists",
       });
     }
+    const classId = req.body.classId;
+    if(!await Class.findById(classId)){
+      return res.status(400).json({message:"Class not found"});
+    }
 
     // Decide final email FIRST
     const studentEmail = email || `${rollNo}@student.bennett.edu`;
@@ -37,14 +42,13 @@ export const addStudent = async (req, res) => {
       name,
       email: studentEmail,
       password: hashedPassword,
-      role: "student",
+      // role: "student",
     });
 
     const student = await Student.create({
       user: user._id,
       rollNo,
-      course,
-      semester,
+      class:classId,
       year,
     });
 
@@ -61,7 +65,7 @@ export const addStudent = async (req, res) => {
 
 export const getAllStudents=async(req,res)=>{
     try {
-        const students=await Student.find().populate("user","name role");
+        const students=await Student.find().populate("user","name email").populate("class","course semester");
         res.status(200).json({students});
         
     } catch (error) {
@@ -72,7 +76,7 @@ export const getAllStudents=async(req,res)=>{
 export const getStudentById=async(req,res)=>{
     try {
         const {id}=req.params;
-        const student=await Student.findById(id).populate("user","name role email");
+        const student=await Student.findById(id).populate("user","name email").populate("class","course semester");
         if(!student){
             return res.status(404).json({message:"Student not found"});
         }
@@ -123,8 +127,7 @@ export const updateStudent = async (req, res) => {
     await user.save();
 
     // Update student fields
-    if (course) student.course = course;
-    if (semester) student.semester = semester;
+    if (classId) student.class = classId;
     if (year) student.year = year;
 
     await student.save();

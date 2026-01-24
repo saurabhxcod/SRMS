@@ -10,19 +10,14 @@ const studentSchema=new mongoose.Schema({
         required:true,
         unique:true
     },
-    course:{
-        type:String,
-        enum:["BTech","MTech","MBA","BBA"],
+    class:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Class",
         required:true
-    },
-    semester:{
+    },year:{
         type:Number,
         required:true
-    },
-    year:{
-        type:Number,
-        required:true
-    },
+    }
 },{timestamps:true})
 
 const Student=mongoose.model("Student",studentSchema);
